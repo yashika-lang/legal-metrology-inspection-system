@@ -130,10 +130,13 @@ services:
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
     envVars:
-      # Build-time only (Vite bakes this into the compiled JS) — matches
-      # the backend service's `name` above.
+      # Build-time only (Vite bakes this into the compiled JS). Render
+      # appended a random suffix to the backend's actual subdomain
+      # (nirikshan-ai-backend-djqm, not the plain service name) — this
+      # must track whatever the backend service's real URL actually is,
+      # not the name given to it in this file.
       - key: VITE_API_BASE_URL
-        value: https://nirikshan-ai-backend.onrender.com/api/v1
+        value: https://nirikshan-ai-backend-djqm.onrender.com/api/v1
     routes:
       # Client-side routing (React Router) — every path serves index.html
       # and the router takes it from there.
