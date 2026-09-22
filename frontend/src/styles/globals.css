@@ -1,0 +1,258 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Design tokens — the single source of truth for the whole app.
+  Reference point: Linear / Vercel Dashboard / Stripe Dashboard — one
+  restrained neutral scale, one confident accent, semantic color kept
+  strictly separate from the accent so "this needs your attention" never
+  competes visually with "this is a clickable brand element."
+
+  Tailwind v4 only generates a `bg-*`/`text-*`/`border-*` utility for a
+  color that is *declared* inside `@theme` — so every token lives here
+  with its light-mode value, and `.dark` below only overrides the same
+  custom property's runtime value. Utilities still resolve through the
+  cascade correctly; they just have to be registered here first.
+*/
+@theme {
+  --font-sans: "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Consolas, monospace;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.06), 0 1px 1px -1px rgb(0 0 0 / 0.04);
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 12px 32px -8px rgb(0 0 0 / 0.14), 0 4px 8px -4px rgb(0 0 0 / 0.06);
+  --shadow-glow: 0 0 0 1px var(--color-accent-ring), 0 8px 24px -4px rgb(79 70 229 / 0.25);
+
+  --animate-fade-in: fade-in 0.4s ease-out;
+  --animate-slide-up: slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-scale-in: scale-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-pulse-ring: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-glow-breathe: glow-breathe 3s ease-in-out infinite;
+
+  --color-background: #ffffff;
+  --color-surface: #fafafa;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: #f4f4f5;
+  --color-overlay: rgb(9 9 11 / 0.5);
+
+  --color-foreground: #0a0a0b;
+  --color-foreground-secondary: #3f3f46;
+  --color-muted-foreground: #71717a;
+  --color-faint-foreground: #a1a1aa;
+
+  --color-border: #e4e4e7;
+  --color-border-strong: #d4d4d8;
+  --color-ring: #4f46e5;
+
+  --color-accent: #4f46e5;
+  --color-accent-hover: #4338ca;
+  --color-accent-foreground: #ffffff;
+  --color-accent-soft: #eef2ff;
+  --color-accent-soft-foreground: #4338ca;
+  --color-accent-ring: rgb(79 70 229 / 0.35);
+
+  --color-success: #16a34a;
+  --color-success-soft: #f0fdf4;
+  --color-success-foreground: #15803d;
+
+  --color-warning: #d97706;
+  --color-warning-soft: #fffbeb;
+  --color-warning-foreground: #b45309;
+
+  --color-critical: #dc2626;
+  --color-critical-soft: #fef2f2;
+  --color-critical-foreground: #b91c1c;
+
+  --color-info: #0284c7;
+  --color-info-soft: #f0f9ff;
+  --color-info-foreground: #0369a1;
+
+  --color-neutral-chip: #f4f4f5;
+  --color-neutral-chip-foreground: #52525b;
+
+  /*
+    AI accent — a second, more vibrant hue pair used ONLY for moments that
+    are literally AI-generated output (the Nirikshak trigger, the pipeline
+    run action, AI-recommendation cards) so they read as distinct from
+    plain navigation/brand accent (indigo) without competing with the
+    semantic severity colors above.
+  */
+  --color-ai-violet: #7c3aed;
+  --color-ai-blue: #2563eb;
+  --color-ai-cyan: #06b6d4;
+  --color-ai-emerald: #10b981;
+  --gradient-ai: linear-gradient(135deg, #4f46e5 0%, #2563eb 55%, #06b6d4 100%);
+  --gradient-landing: radial-gradient(circle at 20% 20%, rgb(79 70 229 / 0.25), transparent 45%),
+    radial-gradient(circle at 80% 30%, rgb(6 182 212 / 0.2), transparent 45%),
+    radial-gradient(circle at 50% 85%, rgb(16 185 129 / 0.16), transparent 50%);
+  --shadow-glow-ai: 0 0 0 1px rgb(37 99 235 / 0.35), 0 8px 28px -6px rgb(37 99 235 / 0.45);
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  @keyframes glow-breathe {
+    0%, 100% { box-shadow: 0 0 0 1px rgb(139 92 246 / 0.3), 0 8px 24px -6px rgb(139 92 246 / 0.4); }
+    50% { box-shadow: 0 0 0 1px rgb(139 92 246 / 0.45), 0 10px 34px -4px rgb(139 92 246 / 0.6); }
+  }
+}
+
+:root {
+  color-scheme: light;
+}
+
+/* ---------- Dark theme — overrides the same custom properties registered above ---------- */
+.dark {
+  --color-background: #09090b;
+  --color-surface: #0f0f12;
+  --color-surface-raised: #16161a;
+  --color-surface-sunken: #0c0c0e;
+  --color-overlay: rgb(0 0 0 / 0.6);
+
+  --color-foreground: #f7f7f8;
+  --color-foreground-secondary: #d4d4d8;
+  --color-muted-foreground: #9797a1;
+  --color-faint-foreground: #6d6d76;
+
+  --color-border: #232327;
+  --color-border-strong: #303036;
+  --color-ring: #818cf8;
+
+  --color-accent: #818cf8;
+  --color-accent-hover: #a5b4fc;
+  --color-accent-foreground: #0a0a0b;
+  --color-accent-soft: #1e1b3a;
+  --color-accent-soft-foreground: #c7d2fe;
+  --color-accent-ring: rgb(129 140 248 / 0.4);
+
+  --color-success: #4ade80;
+  --color-success-soft: #0f2417;
+  --color-success-foreground: #86efac;
+
+  --color-warning: #fbbf24;
+  --color-warning-soft: #271f0a;
+  --color-warning-foreground: #fcd34d;
+
+  --color-critical: #f87171;
+  --color-critical-soft: #2a1315;
+  --color-critical-foreground: #fca5a5;
+
+  --color-info: #38bdf8;
+  --color-info-soft: #0a1f2b;
+  --color-info-foreground: #7dd3fc;
+
+  --color-neutral-chip: #1c1c20;
+  --color-neutral-chip-foreground: #b8b8c0;
+
+  --shadow-glow: 0 0 0 1px var(--color-accent-ring), 0 8px 32px -4px rgb(129 140 248 / 0.3);
+
+  --color-ai-violet: #a78bfa;
+  --color-ai-blue: #60a5fa;
+  --color-ai-cyan: #22d3ee;
+  --color-ai-emerald: #34d399;
+  --gradient-ai: linear-gradient(135deg, #818cf8 0%, #60a5fa 55%, #22d3ee 100%);
+  --gradient-landing: radial-gradient(circle at 20% 20%, rgb(99 102 241 / 0.3), transparent 45%),
+    radial-gradient(circle at 80% 30%, rgb(34 211 238 / 0.22), transparent 45%),
+    radial-gradient(circle at 50% 85%, rgb(52 211 153 / 0.18), transparent 50%);
+  --shadow-glow-ai: 0 0 0 1px rgb(96 165 250 / 0.4), 0 8px 28px -6px rgb(96 165 250 / 0.55);
+
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  ::selection {
+    background-color: var(--color-accent-ring);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: 999px;
+    border: 2px solid var(--color-background);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .glass {
+    background-color: color-mix(in oklab, var(--color-surface-raised) 72%, transparent);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  }
+  .glass-border {
+    border-color: color-mix(in oklab, var(--color-border) 70%, transparent);
+  }
+  .bg-gradient-ai {
+    background-image: var(--gradient-ai);
+  }
+  .bg-gradient-landing {
+    background-image: var(--gradient-landing);
+  }
+  .text-gradient-ai {
+    background-image: var(--gradient-ai);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+  .shadow-glow-ai {
+    box-shadow: var(--shadow-glow-ai);
+  }
+  .card-hover {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-border-strong);
+  }
+}

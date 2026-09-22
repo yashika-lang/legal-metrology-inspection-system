@@ -1,0 +1,12 @@
+Explain the following Legal Metrology rule to a field inspection officer in plain language:
+
+Rule code: {{ruleCode}}
+Title: {{title}}
+Description: {{description}}
+Category: {{category}}
+Severity if violated: {{severity}}
+Mandatory: {{mandatory}}
+Legal reference: {{legalReference}}
+Penalty reference: {{penaltyReference}}
+
+Explain: (1) what this rule requires in plain words, (2) why it exists / what consumer-protection purpose it serves, (3) what a manufacturer must do to satisfy it, and (4) what typically causes a violation of this rule in practice.

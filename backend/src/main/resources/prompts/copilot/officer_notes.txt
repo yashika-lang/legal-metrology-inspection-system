@@ -1,0 +1,8 @@
+Here is everything currently known about this inspection:
+
+{{context}}
+
+The officer wrote these rough field notes:
+"{{roughNotes}}"
+
+Rewrite these notes into clear, professional, grammatically correct inspection-record language suitable for an official government report. Preserve every factual claim the officer made — do not add new facts, do not remove any of their observations, and do not draw a compliance conclusion beyond what the recorded score/violations already state. Keep it concise.

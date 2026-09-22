@@ -1,0 +1,20 @@
+# Shared development/staging environment (deployed, pointed at a shared
+# Supabase dev project). Moderate logging, Swagger still enabled for the team.
+
+logging:
+  level:
+    root: INFO
+    com.legalmetrology: DEBUG
+    org.hibernate.SQL: INFO
+
+spring:
+  jpa:
+    show-sql: false
+
+springdoc:
+  swagger-ui:
+    enabled: true
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS}

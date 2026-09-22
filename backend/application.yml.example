@@ -1,0 +1,125 @@
+# ==============================================================================
+# REFERENCE ONLY — not read by the application (it isn't in src/main/resources,
+# so Spring Boot never loads it). The real, live configuration is
+# src/main/resources/application.yml, which reads every value below from an
+# environment variable (see .env.example). This file exists purely to show
+# what those same settings look like with realistic values filled in, for
+# anyone who prefers configuring via a local override file
+# (application-local.yml) rather than exporting environment variables.
+#
+# If you do copy pieces of this into application-local.yml: that file is
+# already git-ignored — never commit real credentials into a YAML file
+# either. See ../SETUP.md for the full walkthrough.
+# ==============================================================================
+
+spring:
+  application:
+    name: legal-metrology-inspection-system
+  profiles:
+    active: local
+
+  datasource:
+    # Supabase: Project Settings -> Database -> Connection string (Transaction
+    # pooler, port 6543) — or point at a local Postgres for development.
+    url: jdbc:postgresql://db.abcdefghijklmnop.supabase.co:6543/postgres
+    username: postgres.abcdefghijklmnop
+    password: your-database-password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 15MB
+      max-request-size: 30MB
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    # openssl rand -base64 64 — must be at least 32 bytes.
+    secret: c3VwZXItc2VjcmV0LWtleS10aGF0LWlzLWF0LWxlYXN0LTMyLWJ5dGVzLWxvbmc=
+    access-token-expiration-ms: 900000
+    refresh-token-expiration-ms: 604800000
+    issuer: legal-metrology-inspection-system
+
+  cors:
+    allowed-origins: http://localhost:5173
+
+  supabase:
+    # Project Settings -> API. Supabase's dashboard now labels these
+    # "Publishable key" / "Secret key" (same credentials as the older
+    # "anon key" / "service_role key" naming) — the secret/service_role one
+    # goes here; only it is actually used, to authenticate Storage calls.
+    url: https://abcdefghijklmnop.supabase.co
+    service-role-key: sb_secret_your-secret-or-service-role-key
+    storage:
+      # Create these exact bucket names in Storage -> New bucket first.
+      # Only images/reports/evidence are used by any feature today.
+      bucket-images: inspection-images
+      bucket-reports: inspection-reports
+      bucket-evidence: evidence
+      bucket-temp: temp
+      bucket-exports: exports
+      bucket-training-data: training-data
+      signed-url-expiry-seconds: 3600
+
+ai:
+  ocr:
+    provider: google-vision   # google-vision | tesseract
+    google-vision:
+      # Path 1 (recommended): a service account JSON key file — see SETUP.md
+      # step 3-5. When GOOGLE_APPLICATION_CREDENTIALS is set as an actual
+      # environment variable (not a YAML value — the Google auth library
+      # reads it directly from the process environment), api-key below is
+      # ignored entirely.
+      #
+      # Path 2 (simpler): leave GOOGLE_APPLICATION_CREDENTIALS unset and put
+      # a plain Vision API key here instead.
+      api-key: AIzaSyD-your-vision-api-key
+      project-id: your-gcp-project-id   # optional; only sets a quota header
+    tesseract:
+      data-path: /opt/homebrew/share/tessdata   # brew install tesseract tesseract-lang
+      language: eng
+
+  vision:
+    provider: gemini   # gemini | claude
+
+  llm:
+    provider: gemini   # gemini | claude
+
+  gemini:
+    # https://aistudio.google.com/apikey
+    api-key: AIzaSyD-your-gemini-api-key
+    # Google periodically retires model versions — if this 404s with "no
+    # longer available", check https://ai.google.dev/gemini-api/docs/models.
+    # Free-tier keys can have zero quota on "pro" models even when they
+    # exist; "flash" models are the ones with real free-tier quota as of
+    # this writing (verified live against a real key).
+    model: gemini-3.6-flash
+    vision-model: gemini-3.6-flash
+    embedding-model: text-embedding-004
+    embedding-dimensions: 768
+    base-url: https://generativelanguage.googleapis.com/v1beta
+
+  claude:
+    # Only needed if ai.vision.provider or ai.llm.provider above is set to
+    # "claude" instead of "gemini". https://console.anthropic.com/settings/keys
+    api-key: sk-ant-your-claude-api-key
+    model: claude-opus-4-1
+    base-url: https://api.anthropic.com/v1

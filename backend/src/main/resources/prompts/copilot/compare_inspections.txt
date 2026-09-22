@@ -1,0 +1,9 @@
+Here is Inspection A:
+
+{{contextA}}
+
+Here is Inspection B:
+
+{{contextB}}
+
+Compare these two inspections for an officer. Cover: the difference in compliance score, which violations appear in one but not the other, any severity changes, and an overall statement of whether the situation improved, worsened, or stayed similar between A and B — based strictly on the recorded scores/violations above, not your own judgment of compliance.

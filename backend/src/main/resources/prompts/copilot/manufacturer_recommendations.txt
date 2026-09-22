@@ -1,0 +1,5 @@
+Here is everything currently known about this inspection:
+
+{{context}}
+
+Write clear, actionable packaging/labeling recommendations addressed to the manufacturer, based only on the violations listed above. For each violation, state the specific fix needed (e.g. "add the MRP declaration in ₹<amount> format on the front panel"). Group related fixes together. End with one sentence on the overall priority (which fix matters most and why, based on severity). Do not state whether the product is or is not compliant — only what to fix.

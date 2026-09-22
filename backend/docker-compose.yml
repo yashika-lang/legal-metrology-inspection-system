@@ -1,0 +1,44 @@
+# Local development stack: the API + a local Postgres that stands in for
+# Supabase (same engine, so Flyway migrations behave identically). Point
+# DB_URL at your real Supabase connection string instead once you have one —
+# this compose file is a convenience for offline/local development only.
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lmis-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: legal_metrology
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: changeme
+    ports:
+      - "5432:5432"
+    volumes:
+      - lmis_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lmis-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      DB_URL: jdbc:postgresql://postgres:5432/legal_metrology
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  lmis_postgres_data:

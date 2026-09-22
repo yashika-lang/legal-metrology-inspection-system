@@ -1,0 +1,11 @@
+Here is everything currently known about this inspection:
+
+{{context}}
+
+Conversation so far (most recent last):
+{{history}}
+
+The officer now asks:
+"{{question}}"
+
+Answer the question directly using only the facts above. If the question asks "why" something happened (a violation, a low confidence, a quality warning, an anomaly), explain the reasoning using the specific numbers/values given. If you cannot answer from the given facts, say so plainly instead of guessing.

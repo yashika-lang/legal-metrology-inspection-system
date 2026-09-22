@@ -1,0 +1,28 @@
+# Production profile. Minimal logging, no SQL echo, Swagger UI disabled
+# (the OpenAPI JSON stays available behind auth if you want it — UI is the
+# part worth closing off publicly). All secrets come from environment
+# variables injected by the deploy platform — nothing here is a literal value.
+
+logging:
+  level:
+    root: WARN
+    com.legalmetrology: INFO
+    org.hibernate.SQL: WARN
+
+spring:
+  jpa:
+    show-sql: false
+
+springdoc:
+  swagger-ui:
+    enabled: false
+
+server:
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS}

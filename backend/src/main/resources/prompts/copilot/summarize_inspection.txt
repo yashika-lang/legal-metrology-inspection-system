@@ -1,0 +1,5 @@
+Here is everything currently known about this inspection:
+
+{{context}}
+
+Write a concise, professional summary of this inspection suitable for a government report, in 3-6 sentences. Cover: what was inspected, the compliance score and what it means, the most significant violations (if any) and their severity, and the overall picture (image/data quality caveats if relevant). Do not add a compliance conclusion beyond what the recorded score and violations already state.
