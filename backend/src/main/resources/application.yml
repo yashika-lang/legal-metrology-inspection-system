@@ -12,7 +12,13 @@ spring:
     active: ${SPRING_PROFILES_ACTIVE:local}
 
   datasource:
-    url: ${DB_URL}
+    # Local dev sets DB_URL directly (see backend/.env.example). Render's
+    # managed Postgres is wired via separate DB_HOST/DB_PORT/DB_NAME env
+    # vars instead (see render.yaml) — Render's own connection string uses
+    # a bare `postgres://` scheme, which the PostgreSQL JDBC driver does
+    # not accept (`DriverManager` matches drivers by a `jdbc:` prefix), so
+    # the URL is built from parts there rather than passed through as-is.
+    url: ${DB_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:legal_metrology}}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver

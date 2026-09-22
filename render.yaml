@@ -1,0 +1,142 @@
+# Render Blueprint — deploys the whole stack (backend + Postgres + static
+# frontend) from one repo in one pass. Render auto-detects this file at the
+# repo root when you create a new Blueprint from this GitHub repo.
+#
+# Every real secret below is `sync: false` — Render will prompt you to type
+# each one into its own dashboard when the Blueprint is first applied. None
+# of them are ever entered here, stored in this repo, or seen by anyone
+# other than you typing them into Render's UI directly.
+
+databases:
+  - name: nirikshan-ai-db
+    databaseName: legal_metrology
+    plan: free
+    postgresMajorVersion: 16
+
+services:
+  - type: web
+    name: nirikshan-ai-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: SERVER_PORT
+        value: 8080
+
+      # Built from parts (see application.yml) — Render's own connection
+      # string uses a bare `postgres://` scheme the JDBC driver rejects.
+      - key: DB_HOST
+        fromDatabase: { name: nirikshan-ai-db, property: host }
+      - key: DB_PORT
+        fromDatabase: { name: nirikshan-ai-db, property: port }
+      - key: DB_NAME
+        fromDatabase: { name: nirikshan-ai-db, property: database }
+      - key: DB_USERNAME
+        fromDatabase: { name: nirikshan-ai-db, property: user }
+      - key: DB_PASSWORD
+        fromDatabase: { name: nirikshan-ai-db, property: password }
+      - key: DB_POOL_MAX_SIZE
+        value: "10"
+      - key: DB_POOL_MIN_IDLE
+        value: "2"
+
+      # openssl rand -base64 64 — type your own generated value in, never
+      # reuse a value that was ever pasted anywhere else.
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_ACCESS_TOKEN_EXPIRATION_MS
+        value: "900000"
+      - key: JWT_REFRESH_TOKEN_EXPIRATION_MS
+        value: "604800000"
+      - key: JWT_ISSUER
+        value: legal-metrology-inspection-system
+
+      # The frontend static site's Render URL — matches the `name` below.
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://nirikshan-ai-frontend.onrender.com
+
+      - key: PASSWORD_RESET_TOKEN_EXPIRATION_MS
+        value: "3600000"
+      - key: MAX_UPLOAD_FILE_SIZE
+        value: 15MB
+      - key: MAX_UPLOAD_REQUEST_SIZE
+        value: 30MB
+
+      # Supabase — Storage only (this app's own JWT system handles auth,
+      # not Supabase Auth). Project Settings -> API in your Supabase
+      # dashboard for all three.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_BUCKET_IMAGES
+        value: inspection-images
+      - key: SUPABASE_BUCKET_REPORTS
+        value: inspection-reports
+      - key: SUPABASE_BUCKET_EVIDENCE
+        value: evidence
+      - key: SUPABASE_BUCKET_TEMP
+        value: temp
+      - key: SUPABASE_BUCKET_EXPORTS
+        value: exports
+      - key: SUPABASE_BUCKET_TRAINING_DATA
+        value: training-data
+      - key: SUPABASE_SIGNED_URL_EXPIRY_SECONDS
+        value: "3600"
+
+      # Google Vision OCR — the API-key path (GOOGLE_VISION_API_KEY), not
+      # the service-account-JSON-file path: there's no local file on
+      # Render to point GOOGLE_APPLICATION_CREDENTIALS at. Get a key from
+      # https://console.cloud.google.com/apis/credentials with the Vision
+      # API enabled on that project.
+      - key: AI_OCR_PROVIDER
+        value: google-vision
+      - key: GOOGLE_VISION_API_KEY
+        sync: false
+
+      # Gemini — Vision AI + every LLM capability (Copilot, report
+      # summaries, recommendations). One key from
+      # https://aistudio.google.com/apikey covers all of it.
+      - key: AI_VISION_PROVIDER
+        value: gemini
+      - key: AI_LLM_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.6-flash
+      - key: GEMINI_VISION_MODEL
+        value: gemini-3.6-flash
+      - key: GEMINI_EMBEDDING_MODEL
+        value: text-embedding-004
+      - key: GEMINI_EMBEDDING_DIMENSIONS
+        value: "768"
+      - key: GEMINI_BASE_URL
+        value: https://generativelanguage.googleapis.com/v1beta
+
+      - key: LOG_DIR
+        value: logs
+
+  - type: web
+    name: nirikshan-ai-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      # Build-time only (Vite bakes this into the compiled JS) — matches
+      # the backend service's `name` above.
+      - key: VITE_API_BASE_URL
+        value: https://nirikshan-ai-backend.onrender.com/api/v1
+    routes:
+      # Client-side routing (React Router) — every path serves index.html
+      # and the router takes it from there.
+      - type: rewrite
+        source: /*
+        destination: /index.html
